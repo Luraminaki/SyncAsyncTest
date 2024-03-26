@@ -1,0 +1,15 @@
+node_modules
+flask/node_modules
+flask/yarn.lock
+flask/.nuxt
+flask/.output
+flask/dist
+.yarnclean
+*.pyc
+.venv/
+.venv
+.venv.lnk
+gunicorn/*.pem
+gunicorn/*.crt
+gunicorn/*.key
+*.zip
