@@ -81,21 +81,19 @@ async def request(api_route: str, user: str=None, header: HeaderType=HeaderType.
 
     head = set_headers(header)
 
-    now = str(datetime.datetime.now())
-    resp = {"user": user, "request_start": now}
+    start = str(datetime.datetime.now())
 
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(api_route, headers=head, cookies=cookies, timeout=conf.get('request_timeout', 3600)) as response:
-                resp = await response.text("utf-8")
-                proc_res = process_response(resp, api_route)
-                proc_res.update({"user": user, "request_start": now, "request_end": str(datetime.datetime.now())})
+                resp_text = await response.text("utf-8")
+                proc_res = process_response(resp_text, api_route)
+                proc_res.update({"user": user, "request_start": start, "request_end": str(datetime.datetime.now())})
         return proc_res
 
     except Exception as error:
         logger.error('%s -- Could not perform request from user %s -- Returning default response -- %s', curr_func, user, error)
-        resp.update({"request_end": str(datetime.datetime.now())})
-        return resp
+        return {"user": user, "request_start": start, "request_end": str(datetime.datetime.now())}
 
 
 async def main(nb_user: int, api: str) -> None:
@@ -135,18 +133,18 @@ async def main(nb_user: int, api: str) -> None:
 
 
 if __name__ == "__main__":
-    curr_func = inspect.currentframe().f_code.co_name
+    curr_f = inspect.currentframe().f_code.co_name
 
     tic = time.perf_counter()
     asyncio.run(main(nb_user=conf.get('concurrent_user', 50), api='http://0.0.0.0:8080/sync'))
     tac = time.perf_counter() - tic
-    logger.info("%s -- ENDED in %s second(s)", curr_func, tac)
+    logger.info("%s -- ENDED in %s second(s)", curr_f, tac)
     logger.info("#=====================================================")
 
     tic = time.perf_counter()
     asyncio.run(main(nb_user=conf.get('concurrent_user', 50), api='http://0.0.0.0:8080/async'))
     tac = time.perf_counter() - tic
-    logger.info("%s -- ENDED in %s second(s)", curr_func, tac)
+    logger.info("%s -- ENDED in %s second(s)", curr_f, tac)
     logger.info("#=====================================================")
 
 # python3 async_clients.py

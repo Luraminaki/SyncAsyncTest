@@ -51,17 +51,17 @@ class Slow_Process ():
     def wait(self):
         curr_func = inspect.currentframe().f_code.co_name
 
-        now = str(datetime.datetime.now())
+        start = str(datetime.datetime.now())
 
         time.sleep(conf.get('waiting_time', 5))
         time.sleep(conf.get('waiting_time', 5))
 
-        return { "name": curr_func, "response_start": now, "response_end": str(datetime.datetime.now()), "from": self.uuid }
+        return { "name": curr_func, "response_start": start, "response_end": str(datetime.datetime.now()), "from": self.uuid }
 
     async def wait_faster(self):
         curr_func = inspect.currentframe().f_code.co_name
 
-        now = str(datetime.datetime.now())
+        start = str(datetime.datetime.now())
 
         task1 = asyncio.create_task(asyncio.sleep(conf.get('waiting_time', 5)))
         task2 = asyncio.create_task(asyncio.sleep(conf.get('waiting_time', 5)))
@@ -69,7 +69,7 @@ class Slow_Process ():
         await task1
         await task2
 
-        return { "name": curr_func, "response_start": now, "response_end": str(datetime.datetime.now()), "from": self.uuid }
+        return { "name": curr_func, "response_start": start, "response_end": str(datetime.datetime.now()), "from": self.uuid }
 
 
 app = fastapi.FastAPI()
